@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <style>
+.newspaper {
+  column-count: 3;
+  column-gap: 40px;
+}
+.pad {padding-top: 20px; font-family: Arial, Helvetica, sans-serif; color:darkblue;}
+        <meta charset="UTF-8">
+        <title>Home</title>
+
+@import url('https://fonts.googleapis.com/css2?family=Ubuntu:wght@700&display=swap');
+
+body {
+  background-color: hsl(250,17%,94%);
+  height: 100vh;
+  margin: 0;
+  display: grid;
+  place-items: center;
+  float : right;
+}
+
+.multi-button {
+  background-color: white;
+  border: 1px solid white;
+  border-radius: 14px;
+  padding: 12px;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.1), 0 6px 15px 0 rgba(0, 0, 0, 0.1);
+    place-items: center;
+   float : right;
+}
+
+#cut {
+  background-color: lightblue;
+  border: 2px solid white;
+
+}
+
+
+
+.button {
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.09), 0 6px 15px 0 rgba(0, 0, 0, 0.09);
+  padding: 10px 20px 10px 17px;
+    font: 15px Ubuntu;
+  color: black;
+  border-radius: 10px;
+}
+
+.button span {
+  cursor: pointer;
+  display: inline-block;
+  position: relative;
+  transition: 0.5s;
+}
+
+.button span:after {
+  position: absolute;
+  opacity: 0;
+  top: 0;
+  right: -20px;
+  transition: 0.5s;
+}
+
+.button:hover span {
+  padding-right: 20px;
+}
+
+.button:hover span:after {
+  opacity: 1;
+  right: 0;
+}
+
+#cut span:after {
+  font-family: FontAwesome;
+}
+
+#copy span:after {
+  font-family: FontAwesome;
+}
+
+#paste span:after {
+  font-family: FontAwesome;
+}
+
+form {
+  margin-top: 70px;
+  padding-top: 70px;
+  // Both margin-top and padding-top work.
+}
+.mar {  margin-top: 20px;
+  padding-top: 20px; }
+
+    body {
+  font-family: 'Roboto', Arial;
+}
+
+.alert {
+  width: 100%;
+  padding: 12px 16px;
+  border-radius: 4px;
+  border-style: solid;
+  border-width: 1px;
+  margin-bottom: 12px;
+  font-size: 16px;
+}
+
+.alert.alert-success {
+  background-color: rgba(227, 253, 235, 1);
+  border-color: rgba(38, 179, 3, 1);
+  color: rgba(60, 118, 61, 1);
+}
+
+.alert.alert-info {
+  background-color: rgba(217, 237, 247, 1);
+  color: rgba(49, 112, 143, 1);
+  border-color: rgba(126, 182, 193, 1);
+}
+
+
+.alert.alert-warning {
+  background-color: rgba(252, 248, 227, 1);
+  border-color: rgba(177, 161, 129, 1);
+  color: rgba(138, 109, 59, 1);
+}
+
+.alert.alert-danger {
+  background-color: rgba(248, 215, 218, 1);
+  border-color: rgba(220, 53, 69, 1);
+  color: rgba(114, 28, 36,1);
+}
+    </style>
+
+</head>
+<body>
+    <div class="newspaper">
+        <img src="https://cryptocurrencyjobs.co/startups/assets/logos/autowhale.6dbcc9fa955a11ecc26b1d03b3fac186ae3b9c86d220cce9be1c3ca068d829e1.png" style="width:85px;height:85px;">
+
+        <h1 class="pad"> Algo Trading Platform </h1>
+    </div>
+
+<div class="multi-button">
+  <a class="button" href="{{ url_for('home') }}" id="cut"><span>Home</span></a>
+  <a class="button" href="{{ url_for('add_account') }}" id="cut"><span>Add Account</span></a>
+      <a class="button" href="{{ url_for('accounts') }}" id="cut"><span>Accounts</span></a>
+    <a class="button" href="{{ url_for('new_trade') }}" id="cut"><span>New Trade</span></a>
+    <a class="button" href="{{ url_for('shifting') }}" id="cut"><span>Shifting</span></a>
+
+</div>
+
+<form name="shift" action="#" method="post">
+    <label>Current Call Sold</label>
+    <input type="number" name="current_call_sold">
+    <label>New Call to Sell</label>
+    <input type="number" name="new_call_sell">
+    <p></p>
+    <label>Current Call Hedge</label>
+    <input type="number" name="current_call_hedge">
+    <label>New Call Hedge</label>
+    <input type="number" name="new_call_hedge">
+    <p></p>
+    <label>Current Put Sold</label>
+    <input type="number" name="current_put_sold">
+    <label>New Put to Sell</label>
+    <input type="number" name="new_put_sell">
+    <p></p>
+    <label>Current Put Hedge</label>
+    <input type="number" name="current_put_hedge">
+    <label>New Put Hedge</label>
+    <input type="number" name="new_put_hedge">
+    <p></p>
+    <label>Expiry of Current Trade</label>
+    <input type="date" name="previous_expiry">
+    <label>Expiry of New Trade</label>
+    <input type="date" name="current_expiry">
+    <h1>Quantity</h1>
+
+    {% for user in usernames %}
+    <label>{{user}}</label>
+    <input type="number" name="{{user}}">
+    <p></p>
+    {% endfor %}
+    <input type="submit" value="Submit">
+</form>
+<hr style="width:35%;text-align:left;margin-left:0">
+<div class="container">
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+
+        {% for msg in messages %}
+    <div class="alert alert-success" role="alert">{{msg}}</div>
+        {% endfor %}
+
+    {% endif %}
+    {% endwith %}
+</div>
+</body>
+</html>
