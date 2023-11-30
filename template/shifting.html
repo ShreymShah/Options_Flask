@@ -169,10 +169,15 @@ form {
     <label>New Put Hedge</label>
     <input type="number" name="new_put_hedge">
     <p></p>
-    <label>Expiry of Current Trade</label>
-    <input type="date" name="previous_expiry">
-    <label>Expiry of New Trade</label>
-    <input type="date" name="current_expiry">
+    <label>Expiry of Current Call/Put Sold</label>
+    <input type="date" name="previous_expiry_sell">
+    <label>Expiry of New Call/Put to Sell</label>
+    <input type="date" name="current_expiry_sell">
+    <p></p>
+    <label>Expiry of Current Hedge</label>
+    <input type="date" name="previous_expiry_hedge">
+    <label>Expiry of New Hedge</label>
+    <input type="date" name="current_expiry_hedge">
     <h1>Quantity</h1>
 
     {% for user in usernames %}
