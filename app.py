@@ -122,7 +122,7 @@ def shifting():
             dic_qty[key] = request.form[key]
 
         for key,value in dic_qty.items():
-            if value!=0:
+            if value!='0':
                 t1 = threading.Thread(target=shift, args=(key,usernames[key],previous_call_sold, new_call_sell,previous_call_hedge,new_call_hedge, previous_put_sold, new_put_sell,previous_put_hedge,new_put_hedge,previous_expiry,current_expiry,value,))
                 t1.start()
         flash("Shifting Done!")
