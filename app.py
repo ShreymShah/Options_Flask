@@ -68,14 +68,15 @@ def new_trade():
         call_buy = request.form["call_buy"]
         put_sell = request.form["put_sell"]
         put_buy = request.form["put_buy"]
-        expiry = request.form["expiry"]
+        expiry_sell = request.form["expiry_sell"]
+        expiry_hedge = request.form["expiry_hedge"]
         
         for user in usernames:
             dic_qty[user] = request.form[user]
         try:
             for key,value in dic_qty.items():
                 if value!='0':
-                    t1 = threading.Thread(target=take_new_trade, args=(key,usernames[key],call_sell,call_buy,put_sell,put_buy,value,expiry,))
+                    t1 = threading.Thread(target=take_new_trade, args=(key,usernames[key],call_sell,call_buy,put_sell,put_buy,value,expiry_sell,expiry_hedge,))
                     t1.start()
             flash("Trades Taken!")
         except Exception as e:
@@ -115,15 +116,18 @@ def shifting():
         new_put_sell = request.form["new_put_sell"]
         new_put_hedge = request.form["new_put_hedge"]
 
-        previous_expiry = request.form["previous_expiry"]
-        current_expiry = request.form["current_expiry"]
+        previous_expiry_sell = request.form["previous_expiry_sell"]
+        current_expiry_sell = request.form["current_expiry_sell"]
+
+        previous_expiry_hedge = request.form["previous_expiry_hedge"]
+        current_expiry_hedge = request.form["current_expiry_hedge"]
 
         for key,value in usernames.items():
             dic_qty[key] = request.form[key]
 
         for key,value in dic_qty.items():
             if value!='0':
-                t1 = threading.Thread(target=shift, args=(key,usernames[key],previous_call_sold, new_call_sell,previous_call_hedge,new_call_hedge, previous_put_sold, new_put_sell,previous_put_hedge,new_put_hedge,previous_expiry,current_expiry,value,))
+                t1 = threading.Thread(target=shift, args=(key,usernames[key],previous_call_sold, new_call_sell,previous_call_hedge,new_call_hedge, previous_put_sold, new_put_sell,previous_put_hedge,new_put_hedge,previous_expiry_sell,current_expiry_sell,previous_expiry_hedge,current_expiry_hedge,value,))
                 t1.start()
         flash("Shifting Done!")
         return redirect(url_for("shifting"))
@@ -138,7 +142,7 @@ def shifting():
                 usernames.append(cell)
         return render_template("shifting.html",usernames=usernames)
 
-def take_new_trade(username, api_key, call_sell, call_buy, put_sell, put_buy, qty,expiry):
+def take_new_trade(username, api_key, call_sell, call_buy, put_sell, put_buy, qty,expiry_sell,expiry_hedge):
     qty = int(qty)
     alice = Aliceblue(user_id=username, api_key=api_key)
     aliceblue_Res = alice.get_session_id()
@@ -146,17 +150,17 @@ def take_new_trade(username, api_key, call_sell, call_buy, put_sell, put_buy, qt
     alice.get_contract_master("NFO")
     a = int(qty / 1800)
     for i in range(0, a):
-        PlaceBuyOrder(alice,1800,True,call_buy,expiry)
-        PlaceSellOrder(alice, 1800, True, call_sell, expiry)
-        PlaceBuyOrder(alice,1800,False,put_buy,expiry)
-        PlaceSellOrder(alice, 1800, False, put_sell, expiry)
+        PlaceBuyOrder(alice,1800,True,call_buy,expiry_hedge)
+        PlaceSellOrder(alice, 1800, True, call_sell, expiry_sell)
+        PlaceBuyOrder(alice,1800,False,put_buy,expiry_hedge)
+        PlaceSellOrder(alice, 1800, False, put_sell, expiry_sell)
 
-    PlaceBuyOrder(alice, qty-(1800*a), True, call_buy, expiry)
-    PlaceSellOrder(alice, qty-(1800*a), True, call_sell, expiry)
-    PlaceBuyOrder(alice, qty-(1800*a), False, put_buy, expiry)
-    PlaceSellOrder(alice, qty-(1800*a), False, put_sell, expiry)
+    PlaceBuyOrder(alice, qty-(1800*a), True, call_buy, expiry_hedge)
+    PlaceSellOrder(alice, qty-(1800*a), True, call_sell, expiry_sell)
+    PlaceBuyOrder(alice, qty-(1800*a), False, put_buy, expiry_hedge)
+    PlaceSellOrder(alice, qty-(1800*a), False, put_sell, expiry_sell)
 
-def shift(username, api_key, previous_call_sold, new_call_sell,previous_call_hedge,new_call_hedge, previous_put_sold, new_put_sell,previous_put_hedge,new_put_hedge,previous_expiry,current_expiry,qty):
+def shift(username, api_key, previous_call_sold, new_call_sell,previous_call_hedge,new_call_hedge, previous_put_sold, new_put_sell,previous_put_hedge,new_put_hedge,previous_expiry_sell,current_expiry_sell,previous_expiry_hedge,current_expiry_hedge,qty):
     qty = int(qty)
     alice = Aliceblue(user_id=username, api_key=api_key)
     aliceblue_Res = alice.get_session_id()
@@ -164,50 +168,50 @@ def shift(username, api_key, previous_call_sold, new_call_sell,previous_call_hed
     alice.get_contract_master("NFO")
 
     #squareoff currently sold put
-    if previous_put_sold!=new_put_sell:
+    if int(previous_put_sold)!=1 and int(new_put_sell)!=1:
         a = int(qty / 1800)
         for i in range(0,a):
-            PlaceBuyOrder(alice,1800,False,previous_put_sold,previous_expiry)
-        PlaceBuyOrder(alice, qty-(1800*a),False,previous_put_sold,previous_expiry)
+            PlaceBuyOrder(alice,1800,False,previous_put_sold,previous_expiry_sell)
+        PlaceBuyOrder(alice, qty-(1800*a),False,previous_put_sold,previous_expiry_sell)
 
     #squareoff currently sold call
-    if previous_call_sold!=new_call_sell:
+    if int(previous_call_sold)!=1 and int(new_call_sell)!=1:
         a = int(qty / 1800)
         for i in range(0,a):
-            PlaceBuyOrder(alice,1800,True,previous_call_sold,previous_expiry)
-        PlaceBuyOrder(alice, qty-(1800*a),True,previous_call_sold,previous_expiry)
+            PlaceBuyOrder(alice,1800,True,previous_call_sold,previous_expiry_sell)
+        PlaceBuyOrder(alice, qty-(1800*a),True,previous_call_sold,previous_expiry_sell)
 
     #take new hedge for put
-    if previous_put_hedge != new_put_hedge:
+    if int(previous_put_hedge)!=1 and int(new_put_hedge) !=1:
         a = int(qty / 1800)
         for i in range(0, a):
-            PlaceBuyOrder(alice, 1800, False, new_put_hedge, current_expiry)
-            PlaceSellOrder(alice, 1800, False, previous_put_hedge, previous_expiry)
-        PlaceBuyOrder(alice, qty - (1800 * a), False, new_put_hedge, current_expiry)
-        PlaceSellOrder(alice, qty - (1800 * a), False, previous_put_hedge, previous_expiry)
+            PlaceBuyOrder(alice, 1800, False, new_put_hedge, current_expiry_hedge)
+            PlaceSellOrder(alice, 1800, False, previous_put_hedge, previous_expiry_hedge)
+        PlaceBuyOrder(alice, qty - (1800 * a), False, new_put_hedge, current_expiry_hedge)
+        PlaceSellOrder(alice, qty - (1800 * a), False, previous_put_hedge, previous_expiry_hedge)
 
     #take new hedge for call
-    if previous_call_hedge != new_call_hedge:
+    if int(previous_call_hedge)!=1 and int(new_call_hedge)!=1:
         a = int(qty / 1800)
         for i in range(0, a):
-            PlaceBuyOrder(alice, 1800, True, new_call_hedge, current_expiry)
-            PlaceSellOrder(alice, 1800, True, previous_call_hedge, previous_expiry)
-        PlaceBuyOrder(alice, qty - (1800 * a), True, new_call_hedge, current_expiry)
-        PlaceSellOrder(alice, qty - (1800 * a), True, previous_call_hedge, previous_expiry)
+            PlaceBuyOrder(alice, 1800, True, new_call_hedge, current_expiry_hedge)
+            PlaceSellOrder(alice, 1800, True, previous_call_hedge, previous_expiry_hedge)
+        PlaceBuyOrder(alice, qty - (1800 * a), True, new_call_hedge, current_expiry_hedge)
+        PlaceSellOrder(alice, qty - (1800 * a), True, previous_call_hedge, previous_expiry_hedge)
 
     #sell new put
-    if previous_put_sold!=new_put_sell:
+    if int(previous_put_sold)!=1 and int(new_put_sell)!=1:
         a = int(qty / 1800)
         for i in range(0, a):
-            PlaceSellOrder(alice, 1800, False,new_put_sell,current_expiry)
-        PlaceSellOrder(alice, qty - (1800 * a), False, new_put_sell, current_expiry)
+            PlaceSellOrder(alice, 1800, False,new_put_sell,current_expiry_sell)
+        PlaceSellOrder(alice, qty - (1800 * a), False, new_put_sell, current_expiry_sell)
 
     #sell new call
-    if previous_call_sold!=new_call_sell:
+    if int(previous_call_sold)!=1 and int(new_call_sell)!=1:
         a = int(qty / 1800)
         for i in range(0, a):
-            PlaceSellOrder(alice, 1800, True, new_call_sell, current_expiry)
-        PlaceSellOrder(alice, qty - (1800 * a), True, new_call_sell, current_expiry)
+            PlaceSellOrder(alice, 1800, True, new_call_sell, current_expiry_sell)
+        PlaceSellOrder(alice, qty - (1800 * a), True, new_call_sell, current_expiry_sell)
 
 def PlaceBuyOrder(alice, qty, call,strike,expiry):
     res_2 = alice.place_order(transaction_type=TransactionType.Buy,
