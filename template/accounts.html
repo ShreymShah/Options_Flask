@@ -1,187 +1,164 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+    <meta charset="UTF-8">
     <title>Accounts</title>
+
+    <!-- Importing Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@700&display=swap" rel="stylesheet">
+
     <style>
-.newspaper {
-  column-count: 3;
-  column-gap: 40px;
-}
-.pad {padding-top: 20px; font-family: Arial, Helvetica, sans-serif;color:darkblue; }
-        <meta charset="UTF-8">
-        <title>Home</title>
+        body {
+            background-color: hsl(250, 17%, 94%);
+            margin: 0;
+            padding: 0;
+            font-family: 'Ubuntu', Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
 
-@import url('https://fonts.googleapis.com/css2?family=Ubuntu:wght@700&display=swap');
+        .newspaper {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            column-count: 3;
+            column-gap: 20px; /* Reduced the gap */
+        }
 
-body {
-  background-color: hsl(250,17%,94%);
-  height: 100vh;
-  margin: 0;
-  display: grid;
-  place-items: center;
-  float : right;
-}
+        .newspaper img {
+            margin-right: 10px; /* Reduced the margin */
+            width: 100px; /* Adjust width to your preference */
+            height: auto;
+        }
 
-.multi-button {
-  background-color: white;
-  border: 1px solid white;
-  border-radius: 14px;
-  padding: 12px;
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.1), 0 6px 15px 0 rgba(0, 0, 0, 0.1);
-    place-items: center;
-   float : right;
-}
+        .pad {
+            font-size: 2rem;
+            color: darkblue;
+            margin: 0;
+            padding-top: 0; /* Removed top padding */
+        }
 
-#cut {
-  background-color: lightblue;
-  border: 2px solid white;
+        .multi-button {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
 
-}
+        .button {
+            background-color: white;
+            border: 2px solid lightblue;
+            border-radius: 10px;
+            padding: 10px 18px;
+            font-size: 1rem;
+            color: darkblue;
+            text-decoration: none;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
 
-.login_button {
-<!--    box-shadow: 0 2px 2px 0 ;-->
-  padding: 10px 20px 10px 17px;
-    font: 15px monospace;
-  color: blue;
-  border-radius: 1px;
-  margin-left: 25px;
-  margin-right: 30px;
-}
-.delete_button {
-<!--    box-shadow: 0 2px 2px 0 ;-->
-  padding: 10px 20px 10px 17px;
-    font: 15px monospace;
-  color: blue;
-  border-radius: 1px;
-  margin-left: 5px;
-  margin-right: 20px;
-}
+        .button:hover {
+            background-color: lightblue;
+            color: white;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+            transform: translateY(-3px);
+        }
 
-.button {
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.09), 0 6px 15px 0 rgba(0, 0, 0, 0.09);
-  padding: 10px 20px 10px 17px;
-    font: 15px Ubuntu;
-  color: black;
-  border-radius: 10px;
-}
+        .delete_button {
+            padding: 8px 15px;
+            font: 15px monospace;
+            color: white;
+            background-color: red;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-left: 15px;
+        }
 
-.button span {
-  cursor: pointer;
-  display: inline-block;
-  position: relative;
-  transition: 0.5s;
-}
+        .delete_button:hover {
+            background-color: darkred;
+        }
 
-.button span:after {
-  position: absolute;
-  opacity: 0;
-  top: 0;
-  right: -20px;
-  transition: 0.5s;
-}
+        .username-container {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+            font-size: 1.1rem;
+        }
 
-.button:hover span {
-  padding-right: 20px;
-}
+        .accounts-heading {
+            font-size: 2.5rem; /* Make the heading larger */
+            margin: 20px 0;
+            color: darkblue;
+        }
 
-.button:hover span:after {
-  opacity: 1;
-  right: 0;
-}
+        .container {
+            width: 60%;
+            text-align: center;
+        }
 
-#cut span:after {
-  font-family: FontAwesome;
-}
+        .alert {
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: 4px;
+            border-style: solid;
+            border-width: 1px;
+            margin-bottom: 12px;
+            font-size: 16px;
+        }
 
-#login span:after {
-  font-family: FontAwesome;
-}
-
-#copy span:after {
-  font-family: FontAwesome;
-}
-
-#paste span:after {
-  font-family: FontAwesome;
-}
-
-.mar {  margin-top: 50px;
-  padding-top: 50px; }
-
-  body {
-  font-family: 'Roboto', Arial;
-}
-
-.alert {
-  width: 100%;
-  padding: 12px 16px;
-  border-radius: 4px;
-  border-style: solid;
-  border-width: 1px;
-  margin-bottom: 12px;
-  font-size: 16px;
-}
-
-.alert.alert-success {
-  background-color: rgba(227, 253, 235, 1);
-  border-color: rgba(38, 179, 3, 1);
-  color: rgba(60, 118, 61, 1);
-}
-
-.alert.alert-info {
-  background-color: rgba(217, 237, 247, 1);
-  color: rgba(49, 112, 143, 1);
-  border-color: rgba(126, 182, 193, 1);
-}
-
-
-.alert.alert-warning {
-  background-color: rgba(252, 248, 227, 1);
-  border-color: rgba(177, 161, 129, 1);
-  color: rgba(138, 109, 59, 1);
-}
-
-.alert.alert-danger {
-  background-color: rgba(248, 215, 218, 1);
-  border-color: rgba(220, 53, 69, 1);
-  color: rgba(114, 28, 36,1);
-}
-
+        .alert.alert-success {
+            background-color: rgba(227, 253, 235, 1);
+            border-color: rgba(38, 179, 3, 1);
+            color: rgba(60, 118, 61, 1);
+        }
     </style>
-
 </head>
-<body>
-    <div class="newspaper">
-        <img src="https://cryptocurrencyjobs.co/startups/assets/logos/autowhale.6dbcc9fa955a11ecc26b1d03b3fac186ae3b9c86d220cce9be1c3ca068d829e1.png" style="width:85px;height:85px;">
 
-        <h1 class="pad"> Algo Trading Platform </h1>
+<body>
+    <!-- Header Section with Updated Logo -->
+    <div class="newspaper">
+        <img src="https://st.depositphotos.com/16136362/58822/v/450/depositphotos_588229280-stock-illustration-financial-bull-logo-design-trade.jpg" alt="Stock Market Logo">
+        <h1 class="pad">Algo Trading Platform</h1>
     </div>
 
-<div class="multi-button">
-  <a class="button" href="{{ url_for('home') }}" id="cut"><span>Home</span></a>
-  <a class="button" href="{{ url_for('add_account') }}" id="cut"><span>Add Account</span></a>
-  <a class="button" href="{{ url_for('accounts') }}" id="cut"><span>Accounts</span></a>
-    <a class="button" href="{{ url_for('new_trade') }}" id="cut"><span>New Trade</span></a>
-    <a class="button" href="{{ url_for('shifting') }}" id="cut"><span>Shifting</span></a>
-</div>
+    <!-- Navigation Buttons -->
+    <div class="multi-button">
+        <a class="button" href="{{ url_for('home') }}"><span>Home</span></a>
+        <a class="button" href="{{ url_for('add_account') }}"><span>Add Account</span></a>
+        <a class="button" href="{{ url_for('accounts') }}"><span>Accounts</span></a>
+        <a class="button" href="{{ url_for('new_trade') }}"><span>New Trade</span></a>
+        <a class="button" href="{{ url_for('shifting') }}"><span>Shifting</span></a>
+    </div>
 
-<h3 class="mar">Accounts</h3>
-{% for key in username %}
-Username : {{ key }}  <a class="delete_button" href="{{ url_for('delete_account', username=key ) }}" id="login"><span>Delete Account</span></a>
-    <p> </p>
-{% endfor %}
-<hr style="width:35%;text-align:left;margin-left:0">
-<div class="container">
-    {% with messages = get_flashed_messages() %}
-    {% if messages %}
+    <!-- Larger Accounts Heading -->
+    <h3 class="accounts-heading">Accounts</h3>
 
+    <!-- Username and Delete Account Buttons -->
+    {% for key in username %}
+    <div class="username-container">
+        <span>Username: {{ key }}</span>
+        <a class="delete_button" href="{{ url_for('delete_account', username=key) }}">Delete Account</a>
+    </div>
+    {% endfor %}
+
+    <!-- Flash Messages -->
+    <div class="container">
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
         {% for msg in messages %}
-    <div class="alert alert-success" role="alert">{{msg}}</div>
+        <div class="alert alert-success" role="alert">{{ msg }}</div>
         {% endfor %}
-
-    {% endif %}
-    {% endwith %}
-</div>
+        {% endif %}
+        {% endwith %}
+    </div>
 
 </body>
+
 </html>
