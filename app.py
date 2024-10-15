@@ -214,33 +214,35 @@ def shift(username, api_key, previous_call_sold, new_call_sell,previous_call_hed
         PlaceSellOrder(alice, qty - (1800 * a), True, new_call_sell, current_expiry_sell)
 
 def PlaceBuyOrder(alice, qty, call,strike,expiry):
-    res_2 = alice.place_order(transaction_type=TransactionType.Buy,
-                            instrument=alice.get_instrument_for_fno(exch="NFO",symbol='NIFTY', expiry_date=expiry, is_fut=False,strike=int(strike), is_CE=call),
-                            quantity=qty,
-                            order_type=OrderType.Market,
-                            product_type=ProductType.Normal,
-                            price=0.0,
-                            trigger_price=None,
-                            stop_loss=None,
-                            square_off=None,
-                            trailing_sl=None,
-                            is_amo=False,
-                            order_tag='order1')
+    if int(strike)!=0 or int(strike)!=1:
+        res_2 = alice.place_order(transaction_type=TransactionType.Buy,
+                                instrument=alice.get_instrument_for_fno(exch="NFO",symbol='NIFTY', expiry_date=expiry, is_fut=False,strike=int(strike), is_CE=call),
+                                quantity=qty,
+                                order_type=OrderType.Market,
+                                product_type=ProductType.Normal,
+                                price=0.0,
+                                trigger_price=None,
+                                stop_loss=None,
+                                square_off=None,
+                                trailing_sl=None,
+                                is_amo=False,
+                                order_tag='order1')
     t.sleep(2)
 
 def PlaceSellOrder(alice, qty, call,strike,expiry):
-    res_2 = alice.place_order(transaction_type=TransactionType.Sell,
-                            instrument=alice.get_instrument_for_fno(exch="NFO",symbol='NIFTY', expiry_date=expiry, is_fut=False,strike=int(strike), is_CE=call),
-                            quantity=qty,
-                            order_type=OrderType.Market,
-                            product_type=ProductType.Normal,
-                            price=0.0,
-                            trigger_price=None,
-                            stop_loss=None,
-                            square_off=None,
-                            trailing_sl=None,
-                            is_amo=False,
-                            order_tag='order1')
+    if int(strike)!=0 or int(strike)!=1:
+        res_2 = alice.place_order(transaction_type=TransactionType.Sell,
+                                instrument=alice.get_instrument_for_fno(exch="NFO",symbol='NIFTY', expiry_date=expiry, is_fut=False,strike=int(strike), is_CE=call),
+                                quantity=qty,
+                                order_type=OrderType.Market,
+                                product_type=ProductType.Normal,
+                                price=0.0,
+                                trigger_price=None,
+                                stop_loss=None,
+                                square_off=None,
+                                trailing_sl=None,
+                                is_amo=False,
+                                order_tag='order1')
     t.sleep(2)
 
 if __name__ == "__main__":
