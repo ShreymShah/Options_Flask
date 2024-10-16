@@ -214,6 +214,7 @@ def shift(username, api_key, previous_call_sold, new_call_sell,previous_call_hed
         PlaceSellOrder(alice, qty - (1800 * a), True, new_call_sell, current_expiry_sell)
 
 def PlaceBuyOrder(alice, qty, call,strike,expiry):
+    alice.get_contract_master("NFO")
     if int(strike)!=0 or int(strike)!=1:
         res_2 = alice.place_order(transaction_type=TransactionType.Buy,
                                 instrument=alice.get_instrument_for_fno(exch="NFO",symbol='NIFTY', expiry_date=expiry, is_fut=False,strike=int(strike), is_CE=call),
@@ -230,6 +231,7 @@ def PlaceBuyOrder(alice, qty, call,strike,expiry):
     t.sleep(2)
 
 def PlaceSellOrder(alice, qty, call,strike,expiry):
+    alice.get_contract_master("NFO")
     if int(strike)!=0 or int(strike)!=1:
         res_2 = alice.place_order(transaction_type=TransactionType.Sell,
                                 instrument=alice.get_instrument_for_fno(exch="NFO",symbol='NIFTY', expiry_date=expiry, is_fut=False,strike=int(strike), is_CE=call),
