@@ -1,29 +1,85 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
-import time as t
-import threading
-from pya3 import *
+from flask import Flask, render_template, request, redirect, url_for, flash, send_file
+import pandas as pd
+import yfinance as yf
 import openpyxl
+import threading
+import time as t
+import os
+from pya3 import Aliceblue
 
-app = Flask(__name__,template_folder='template')
+app = Flask(__name__, template_folder='template')
 app.secret_key = "DONT"
 
-@app.route("/")
-def home():
-    return render_template("home.html")
+# Path for the backtest files
+if not os.path.exists('downloads'):
+    os.makedirs('downloads')
 
-@app.route("/add_account", methods=["POST", "GET"])
+def backtest_to_excel(symbol: str, backtest_years: int, timeframe: str, filename: str):
+    if timeframe not in ['1d', '1wk', '1mo']:
+        raise ValueError("Timeframe must be one of '1d', '1wk', or '1mo'")
+
+    data = yf.download(symbol, period=f'{backtest_years}y', interval=timeframe)
+    data.index = data.index.tz_localize(None)
+    data['Date'] = data.index.strftime('%d/%m/%Y')
+
+    data['High-Open %'] = ((data['High'] - data['Open']) / data['Open']) * 100
+    data['Low-Open %'] = ((data['Low'] - data['Open']) / data['Open']) * 100
+
+    data['High-Open %'] = data['High-Open %'].round(2)
+    data['Low-Open %'] = data['Low-Open %'].round(2)
+
+    high_open_sorted = data[['Date', 'High-Open %']].sort_values(by='High-Open %', ascending=False)
+    low_open_sorted = data[['Date', 'Low-Open %']].sort_values(by='Low-Open %', ascending=True)
+
+    high_open_sorted.rename(columns={'Date': 'Date (High-Open %)'}, inplace=True)
+    low_open_sorted.rename(columns={'Date': 'Date (Low-Open %)'}, inplace=True)
+
+    high_open_sorted.reset_index(drop=True, inplace=True)
+    low_open_sorted.reset_index(drop=True, inplace=True)
+
+    blank_col = pd.DataFrame({"": [""] * len(high_open_sorted)})
+
+    combined_data = pd.concat([high_open_sorted, blank_col, low_open_sorted], axis=1)
+
+    combined_data.columns = [
+        "Date (High-Open %)", "High-Open %", "",
+        "Date (Low-Open %)", "Low-Open %"
+    ]
+
+    with pd.ExcelWriter(filename, engine='xlsxwriter') as writer:
+        workbook = writer.book
+        worksheet = workbook.add_worksheet('Backtest Data')
+        writer.sheets['Backtest Data'] = worksheet
+
+        worksheet.write(0, 0, f"Symbol: {symbol}")
+        worksheet.write(1, 0, f"Backtest Years: {backtest_years}")
+        worksheet.write(2, 0, f"Timeframe: {timeframe}")
+
+        combined_data.to_excel(writer, sheet_name='Backtest Data', startrow=4, index=False)
+
+        for i, col in enumerate(combined_data.columns):
+            max_len = max(
+                combined_data[col].astype(str).map(len).max(),
+                len(col)
+            ) + 2
+            worksheet.set_column(i, i, max_len)
+
+@app.route('/')
+def index():
+    return render_template('home.html')
+
+@app.route('/add_account', methods=["POST", "GET"])
 def add_account():
     if request.method == "POST":
         username = request.form["username"]
         api_key = request.form["api_key"]
         wb = openpyxl.load_workbook("data.xlsx")
         sheet = wb.active
-        sheet.cell(row=sheet.max_row+1,column=1).value = username
+        sheet.cell(row=sheet.max_row + 1, column=1).value = username
         sheet.cell(row=sheet.max_row, column=2).value = api_key
         wb.save("data.xlsx")
-        flash("account added")
+        flash("Account added")
         return redirect(url_for("add_account"))
-
     else:
         return render_template("add_account.html")
 
@@ -31,68 +87,53 @@ def add_account():
 def accounts():
     wb = openpyxl.load_workbook("data.xlsx")
     sheet = wb.active
-    usernames = []
-    for i in range(2,sheet.max_row+1):
-        cell = sheet.cell(row=i, column=1).value
-        if cell!=None:
-            usernames.append(cell)
-
-    return render_template("accounts.html",username=usernames)
+    usernames = [sheet.cell(row=i, column=1).value for i in range(2, sheet.max_row + 1) if sheet.cell(row=i, column=1).value]
+    return render_template("accounts.html", username=usernames)
 
 @app.route("/delete_account/<username>")
 def delete_account(username):
-    print(username)
     wb = openpyxl.load_workbook("data.xlsx")
     sheet = wb.active
-    for i in range(1,sheet.max_row+1):
-        print(sheet.cell(row=i,column=1).value)
-        if username == sheet.cell(row=i,column=1).value:
+    for i in range(1, sheet.max_row + 1):
+        if username == sheet.cell(row=i, column=1).value:
             sheet.cell(row=i, column=1).value = ""
             sheet.cell(row=i, column=2).value = ""
             wb.save("data.xlsx")
             flash("Account Deleted!")
     return redirect(url_for("accounts"))
 
-@app.route("/new_trade",methods=["POST","GET"])
+@app.route("/new_trade", methods=["POST", "GET"])
 def new_trade():
     if request.method == "POST":
         dic_qty = {}
         wb = openpyxl.load_workbook("data.xlsx")
         sheet = wb.active
-        usernames = {}
-        for i in range(2, sheet.max_row + 1):
-            cell = sheet.cell(row=i, column=1).value
-            if cell != None:
-                usernames[cell] = sheet.cell(row=i, column=2).value
+        usernames = {sheet.cell(row=i, column=1).value: sheet.cell(row=i, column=2).value for i in range(2, sheet.max_row + 1) if sheet.cell(row=i, column=1).value}
+
         call_sell = request.form["call_sell"]
         call_buy = request.form["call_buy"]
         put_sell = request.form["put_sell"]
         put_buy = request.form["put_buy"]
         expiry_sell = request.form["expiry_sell"]
         expiry_hedge = request.form["expiry_hedge"]
-        
+
         for user in usernames:
             dic_qty[user] = request.form[user]
         try:
-            for key,value in dic_qty.items():
-                if value!='0':
-                    t1 = threading.Thread(target=take_new_trade, args=(key,usernames[key],call_sell,call_buy,put_sell,put_buy,value,expiry_sell,expiry_hedge,))
+            for key, value in dic_qty.items():
+                if value != '0':
+                    t1 = threading.Thread(target=take_new_trade, args=(key, usernames[key], call_sell, call_buy, put_sell, put_buy, value, expiry_sell, expiry_hedge))
                     t1.start()
             flash("Trades Taken!")
         except Exception as e:
             print(e)
             flash("Some error occurred!")
         return redirect(url_for("new_trade"))
-
     else:
         wb = openpyxl.load_workbook("data.xlsx")
         sheet = wb.active
-        usernames = []
-        for i in range(2, sheet.max_row + 1):
-            cell = sheet.cell(row=i, column=1).value
-            if cell != None:
-                usernames.append(cell)
-        return render_template("new_trade.html",usernames=usernames)
+        usernames = [sheet.cell(row=i, column=1).value for i in range(2, sheet.max_row + 1) if sheet.cell(row=i, column=1).value]
+        return render_template("new_trade.html", usernames=usernames)
 
 @app.route("/shifting",methods=["POST","GET"])
 def shifting():
