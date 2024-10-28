@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Backtest Data Generator</title>
+    <!-- Importing Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+
+    <style>
+        body {
+            background-color: hsl(250, 17%, 94%);
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-family: 'Roboto', Arial, sans-serif;
+        }
+
+        .newspaper {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .newspaper img {
+            margin-right: 15px;
+            width: 85px;
+            height: 85px;
+        }
+
+        .pad {
+            font-size: 2rem;
+            color: darkblue;
+            margin: 0;
+        }
+
+        .multi-button {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .button {
+            background-color: white;
+            border: 2px solid lightblue;
+            border-radius: 10px;
+            padding: 10px 20px;
+            font-size: 1rem;
+            color: darkblue;
+            text-decoration: none;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .button:hover {
+            background-color: darkblue;
+            color: white;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+            transform: translateY(-3px);
+        }
+
+        .container {
+            width: 90%;
+            max-width: 500px;
+            text-align: center;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            width: 100%;
+        }
+
+        form label {
+            font-size: 1rem;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        form input[type="text"],
+        form input[type="number"],
+        form select {
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid lightgray;
+            font-size: 1rem;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        button[type="submit"] {
+            background-color: darkblue;
+            color: white;
+            cursor: pointer;
+            padding: 10px 20px;
+            border-radius: 5px;
+            border: none;
+            font-size: 1rem;
+            transition: background-color 0.3s ease;
+        }
+
+        button[type="submit"]:hover {
+            background-color: lightblue;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header Section -->
+    <div class="newspaper">
+        <img src="https://st.depositphotos.com/16136362/58822/v/450/depositphotos_588229280-stock-illustration-financial-bull-logo-design-trade.jpg" alt="Stock Market Logo">
+        <h1 class="pad">Algo Trading Platform</h1>
+    </div>
+
+    <!-- Navigation Buttons -->
+    <div class="multi-button">
+        <a class="button" href="{{ url_for('home') }}"><span><b>Home</b></span></a>
+        <a class="button" href="{{ url_for('add_account') }}"><span><b>Add Account</b></span></a>
+        <a class="button" href="{{ url_for('accounts') }}"><span><b>Accounts</b></span></a>
+        <a class="button" href="{{ url_for('new_trade') }}"><span><b>New Trade</b></span></a>
+        <a class="button" href="{{ url_for('shifting') }}"><span><b>Shifting</b></span></a>
+        <a class="button" href="{{ url_for('download_home') }}"><span>Backtesting</span></a>
+    </div>
+
+    <!-- Main Content Section -->
+    <div class="container">
+        <h1>Stock Backtest Data Generator</h1>
+        <form action="/download" method="post">
+            <label for="symbol">Stock Symbol:</label>
+            <input type="text" id="symbol" name="symbol" placeholder="e.g., AAPL" required><br>
+
+            <label for="backtest_years">Backtest Period (years):</label>
+            <input type="number" id="backtest_years" name="backtest_years" min="1" placeholder="e.g., 1" required><br>
+
+            <label for="timeframe">Timeframe:</label>
+            <select id="timeframe" name="timeframe" required>
+                <option value="1d">Daily</option>
+                <option value="1wk">Weekly</option>
+                <option value="1mo">Monthly</option>
+            </select><br>
+
+            <button type="submit">Generate & Download</button>
+        </form>
+    </div>
+</body>
+</html>
