@@ -182,6 +182,25 @@ def shifting():
             if cell != None:
                 usernames.append(cell)
         return render_template("shifting.html",usernames=usernames)
+        
+@app.route('/downloads')
+def index():
+    return render_template('index.html')
+
+@app.route('/download', methods=['POST'])
+def download():
+    symbol = request.form['symbol']
+    backtest_years = int(request.form['backtest_years'])
+    timeframe = request.form['timeframe']
+
+    output_filename = f"{symbol}_backtest.xlsx"
+    output_filepath = os.path.join('downloads', output_filename)
+
+    try:
+        backtest_to_excel(symbol, backtest_years, timeframe, output_filepath)
+        return send_file(output_filepath, as_attachment=True)
+    except Exception as e:
+        return f"Error: {str(e)}"
 
 def take_new_trade(username, api_key, call_sell, call_buy, put_sell, put_buy, qty,expiry_sell,expiry_hedge):
     qty = int(qty)
