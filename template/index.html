@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Backtest Data Generator</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Stock Backtest Data Generator</h1>
+        <form action="/download" method="post">
+            <label for="symbol">Stock Symbol:</label>
+            <input type="text" id="symbol" name="symbol" placeholder="e.g., AAPL" required><br>
+
+            <label for="backtest_years">Backtest Period (years):</label>
+            <input type="number" id="backtest_years" name="backtest_years" min="1" placeholder="e.g., 1" required><br>
+
+            <label for="timeframe">Timeframe:</label>
+            <select id="timeframe" name="timeframe" required>
+                <option value="1d">Daily</option>
+                <option value="1wk">Weekly</option>
+                <option value="1mo">Monthly</option>
+            </select><br>
+
+            <button type="submit">Generate & Download</button>
+        </form>
+    </div>
+</body>
+</html>
