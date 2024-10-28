@@ -65,7 +65,7 @@ def backtest_to_excel(symbol: str, backtest_years: int, timeframe: str, filename
             worksheet.set_column(i, i, max_len)
 
 @app.route('/')
-def index():
+def home():
     return render_template('home.html')
 
 @app.route('/add_account', methods=["POST", "GET"])
