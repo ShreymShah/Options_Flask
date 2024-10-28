@@ -184,7 +184,7 @@ def shifting():
         return render_template("shifting.html",usernames=usernames)
         
 @app.route('/downloads')
-def index():
+def download_home():
     return render_template('index.html')
 
 @app.route('/download', methods=['POST'])
