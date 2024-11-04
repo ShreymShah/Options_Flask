@@ -5,7 +5,7 @@ import openpyxl
 import threading
 import time as t
 import os
-from pya3 import Aliceblue
+from pya3 import *
 
 app = Flask(__name__, template_folder='template')
 app.secret_key = "DONT"
