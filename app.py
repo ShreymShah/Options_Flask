@@ -227,51 +227,69 @@ def shift(username, api_key, previous_call_sold, new_call_sell,previous_call_hed
     print(aliceblue_Res)
     alice.get_contract_master("NFO")
 
-    #squareoff currently sold put
-    if int(previous_put_sold)!=1 and int(new_put_sell)!=1:
-        a = int(qty / 1800)
-        for i in range(0,a):
-            PlaceBuyOrder(alice,1800,False,previous_put_sold,previous_expiry_sell)
-        PlaceBuyOrder(alice, qty-(1800*a),False,previous_put_sold,previous_expiry_sell)
+    #take new hedge
 
-    #squareoff currently sold call
-    if int(previous_call_sold)!=1 and int(new_call_sell)!=1:
-        a = int(qty / 1800)
-        for i in range(0,a):
-            PlaceBuyOrder(alice,1800,True,previous_call_sold,previous_expiry_sell)
-        PlaceBuyOrder(alice, qty-(1800*a),True,previous_call_sold,previous_expiry_sell)
-
-    #take new hedge for put
-    if int(previous_put_hedge)!=1 and int(new_put_hedge) !=1:
-        a = int(qty / 1800)
-        for i in range(0, a):
+    a = int(qty / 1800)
+    for i in range(0, a):
+        if int(previous_put_hedge) != 1 and int(new_put_hedge) != 1:
             PlaceBuyOrder(alice, 1800, False, new_put_hedge, current_expiry_hedge)
-            PlaceSellOrder(alice, 1800, False, previous_put_hedge, previous_expiry_hedge)
-        PlaceBuyOrder(alice, qty - (1800 * a), False, new_put_hedge, current_expiry_hedge)
-        PlaceSellOrder(alice, qty - (1800 * a), False, previous_put_hedge, previous_expiry_hedge)
 
-    #take new hedge for call
-    if int(previous_call_hedge)!=1 and int(new_call_hedge)!=1:
-        a = int(qty / 1800)
-        for i in range(0, a):
-            PlaceBuyOrder(alice, 1800, True, new_call_hedge, current_expiry_hedge)
-            PlaceSellOrder(alice, 1800, True, previous_call_hedge, previous_expiry_hedge)
-        PlaceBuyOrder(alice, qty - (1800 * a), True, new_call_hedge, current_expiry_hedge)
-        PlaceSellOrder(alice, qty - (1800 * a), True, previous_call_hedge, previous_expiry_hedge)
+        if int(previous_call_hedge) != 1 and int(new_call_hedge) != 1:
+            PlaceBuyOrder(alice, 1800, False, new_call_hedge, current_expiry_hedge)
+            
+    if int(previous_put_hedge) != 1 and int(new_put_hedge) != 1:
+        PlaceBuyOrder(alice, qty - (1800*a), False, new_put_hedge, current_expiry_hedge)
 
-    #sell new put
-    if int(previous_put_sold)!=1 and int(new_put_sell)!=1:
-        a = int(qty / 1800)
-        for i in range(0, a):
+    if int(previous_call_hedge) != 1 and int(new_call_hedge) != 1:
+        PlaceBuyOrder(alice, qty - (1800*a), False, new_call_hedge, current_expiry_hedge)
+
+    #squareoff currently sold put
+    
+    a = int(qty / 1800)
+    for i in range(0,a):
+        if int(previous_put_sold)!=1 and int(new_put_sell)!=1:
+            PlaceBuyOrder(alice,1800,False,previous_put_sold,previous_expiry_sell)
+
+        if int(previous_call_sold)!=1 and int(new_call_sell)!=1:
+            PlaceBuyOrder(alice,1800,False,previous_call_sold,previous_expiry_sell)
+            
+        if int(previous_put_sold)!=1 and int(new_put_sell)!=1:
             PlaceSellOrder(alice, 1800, False,new_put_sell,current_expiry_sell)
-        PlaceSellOrder(alice, qty - (1800 * a), False, new_put_sell, current_expiry_sell)
 
-    #sell new call
+        if int(previous_call_sold)!=1 and int(new_call_sell)!=1:
+            PlaceSellOrder(alice, 1800, False,new_call_sell,current_expiry_sell)
+
+    if int(previous_put_sold)!=1 and int(new_put_sell)!=1:
+        PlaceBuyOrder(alice,1800,False,previous_put_sold,previous_expiry_sell)
+
     if int(previous_call_sold)!=1 and int(new_call_sell)!=1:
-        a = int(qty / 1800)
-        for i in range(0, a):
-            PlaceSellOrder(alice, 1800, True, new_call_sell, current_expiry_sell)
-        PlaceSellOrder(alice, qty - (1800 * a), True, new_call_sell, current_expiry_sell)
+        PlaceBuyOrder(alice,1800,False,previous_call_sold,previous_expiry_sell)
+            
+    if int(previous_put_sold)!=1 and int(new_put_sell)!=1:
+        PlaceSellOrder(alice, 1800, False,new_put_sell,current_expiry_sell)
+
+    if int(previous_call_sold)!=1 and int(new_call_sell)!=1:
+        PlaceSellOrder(alice, 1800, False,new_call_sell,current_expiry_sell)
+
+
+
+    #square off old hedge
+    
+    a = int(qty / 1800)
+    for i in range(0, a):
+        if int(previous_put_hedge) != 1 and int(new_put_hedge) != 1:
+            PlaceSellOrder(alice, 1800, False, previous_put_hedge, previous_expiry_hedge)
+
+        if int(previous_call_hedge) != 1 and int(new_call_hedge) != 1:
+            PlaceSellOrder(alice, 1800, False, previous_call_hedge, previous_expiry_hedge)
+            
+    if int(previous_put_hedge) != 1 and int(new_put_hedge) != 1:
+        PlaceSellOrder(alice, qty - (1800*a), False, previous_put_hedge, previous_expiry_hedge)
+
+    if int(previous_call_hedge) != 1 and int(new_call_hedge) != 1:
+        PlaceSellOrder(alice, qty - (1800*a), False, previous_call_hedge, previous_expiry_hedge)
+        
+        
 
 def PlaceBuyOrder(alice, qty, call,strike,expiry):
     alice.get_contract_master("NFO")
