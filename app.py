@@ -306,7 +306,7 @@ def PlaceBuyOrder(alice, qty, call,strike,expiry):
                                 trailing_sl=None,
                                 is_amo=False,
                                 order_tag='order1')
-    t.sleep(2)
+    t.sleep(1)
 
 def PlaceSellOrder(alice, qty, call,strike,expiry):
     alice.get_contract_master("NFO")
@@ -323,7 +323,7 @@ def PlaceSellOrder(alice, qty, call,strike,expiry):
                                 trailing_sl=None,
                                 is_amo=False,
                                 order_tag='order1')
-    t.sleep(2)
+    t.sleep(1)
 
 if __name__ == "__main__":
     app.run(debug=True)
